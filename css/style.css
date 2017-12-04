@@ -1,0 +1,53 @@
+body {
+    background-color: #cccccc;
+}
+
+.container {
+    margin: auto;
+    max-width: 1200px;
+}
+
+.flex-container {
+    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 5px auto;
+    max-width: 800px;
+}
+
+.flex-element {
+    align-items: center;
+    background-color: #cc0000;
+    display: flex;
+    width: 100%;
+    margin: 0 5px;
+    height: 50px;
+    overflow: hidden;
+    justify-content: center;
+    position: relative;
+    transition: all 2s;
+}
+
+i {
+    color: #fff;
+}
+
+.wrapper {
+    top: 0;
+    background-color: #696969;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    transition: top 500ms ease;
+}
+
+.open {
+    top: -100%;
+    /*transition: top 500ms ease;*/
+}
+
+.checked {
+    opacity: 0;
+    transition: opacity 500ms ease;
+}
