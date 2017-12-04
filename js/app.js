@@ -3,6 +3,7 @@ var Game = {
     MEDIUM: 8,
     LARGE: 10,
     EXTRA_LARGE: 12,
+
     stepCounter: 0,
 
     area: [],
@@ -13,13 +14,23 @@ var Game = {
     scoreLarge: 0 || localStorage.scoreLarge,
     scoreExtraLarge: 0 || localStorage.scoreExtraLarge,
 
-    startGame: 0,
+    startGame: false,
+
+    minutesEl: document.getElementById('minutes'),
+    secondsEl: document.getElementById('seconds'),
+    millisecondsEl: document.getElementById('milliseconds'),
+    stepsEl: document.getElementById('steps'),
+
+    timerId: 0,
+    milliseconds: 0,
+    seconds: 0,
+    minutes: 0,
 
     size: null,
     openCellCounter: 0,
     checkCountEmptyCellId: null,
 
-    icons: [
+    icons: localStorage.icons.split(',') || [
         'fa-telegram',
         'fa-paper-plane',
         'fa-puzzle-piece',
@@ -165,8 +176,37 @@ var Game = {
         }
     },
 
-    stopWatch: function() {
+    startTimer: function() {
+        var self = this;
+        clearInterval(this.timerId);
+        this.timerId = setInterval(function () {
+            self.milliseconds++;
 
+            if (self.milliseconds > 99) {
+                self.seconds++;
+                self.secondsEl.innerHTML = "0" + self.seconds;
+                self.milliseconds = 0;
+            }
+
+            if (self.seconds > 9){
+                self.secondsEl.innerHTML = self.seconds;
+            }
+
+            if(self.seconds > 59) {
+                self.minutes++;
+                self.minutesEl.innerHTML = '0' + self.minutes;
+                self.seconds = 0;
+                self.secondsEl.innerHTML = '0' + 0;
+            }
+
+            if(self.minutes > 9) {
+                self.minutesEl.innerHTML = self.minutes;
+            }
+        }, 10);
+    },
+
+    stopTimer: function () {
+        clearInterval(this.timerId);
     },
 
     renderAreaView: function( size ) {
@@ -230,6 +270,11 @@ var Game = {
     },
 
     openCell: function(x, y) {
+        if(!this.startGame) {
+            this.startGame = true;
+            this.startTimer();
+        }
+
         if( !this.checkCountEmptyCellId ) {
             var flexElement = document.querySelector('.flex-element[data-row="' + x + '"][data-col="' + y + '"]');
             var wrapperClasses = flexElement.childNodes[0].className.split(' ');
@@ -245,7 +290,6 @@ var Game = {
                 wrapperClasses.push('open');
                 document.querySelector('.flex-element[data-row="' + x + '"][data-col="' + y + '"]').childNodes[0].className = wrapperClasses.join(' ');
                 this.area[x][y].isOpen = true;
-                this.stepCounter++;
                 this.checkCountEmptyCell();
             }
         }
@@ -270,6 +314,9 @@ var Game = {
         }
 
         if( this.openCellCounter > 1 ) {
+            this.stepCounter++;
+            this.stepsEl.innerHTML = this.stepCounter;
+
             if( this.openCellArea[0].value === this.openCellArea[1].value ) {
                 this.area[this.openCellArea[0].x][this.openCellArea[0].y].isChecked = true;
                 this.area[this.openCellArea[1].x][this.openCellArea[1].y].isChecked = true;
@@ -293,8 +340,6 @@ var Game = {
                     self.checkCountEmptyCellId = null;
                 }, 1000);
             }
-        } else {
-
         }
     },
 
@@ -310,6 +355,7 @@ var Game = {
 
         if(counterCheckedCell === this.size * this.size) {
             alert('You win');
+            this.stopTimer();
         }
     },
 
@@ -318,12 +364,13 @@ var Game = {
     },
 
     start: function () {
+        localStorage.icons = this.icons;
         var self = this;
         this.generateArea();
         this.setIcons();
         setTimeout(function () {
             self.closeAll();
-        }, 2000);
+        }, 3000);
         this.delegateEvents();
     }
 };
