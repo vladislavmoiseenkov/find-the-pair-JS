@@ -9,17 +9,14 @@ var Game = {
     area: [],
     openCellArea: [],
 
-    scoreSmall: 0 || localStorage.scoreSmall,
-    scoreMedium: 0 || localStorage.scoreMedium,
-    scoreLarge: 0 || localStorage.scoreLarge,
-    scoreExtraLarge: 0 || localStorage.scoreExtraLarge,
-
     startGame: false,
+    pause: false,
 
     minutesEl: document.getElementById('minutes'),
     secondsEl: document.getElementById('seconds'),
     millisecondsEl: document.getElementById('milliseconds'),
     stepsEl: document.getElementById('steps'),
+    playPauseBTN: document.getElementById('play-pause'),
 
     timerId: 0,
     milliseconds: 0,
@@ -30,7 +27,7 @@ var Game = {
     openCellCounter: 0,
     checkCountEmptyCellId: null,
 
-    icons: localStorage.icons.split(',') || [
+    icons: [
         'fa-telegram',
         'fa-paper-plane',
         'fa-puzzle-piece',
@@ -240,6 +237,32 @@ var Game = {
         this.container.appendChild(_area);
     },
 
+    playPause: function () {
+        if(this.startGame) {
+            this.pause = !this.pause;
+
+            var playEl = document.createElement('i'),
+                pauseEl = document.createElement('i');
+
+            playEl.className = 'fa fa-play fa-2x';
+            pauseEl.className = 'fa fa-pause fa-2x';
+
+            if(this.pause === true) {
+                while(this.playPauseBTN.children[0]) {
+                    this.playPauseBTN.removeChild(this.playPauseBTN.children[0]);
+                }
+                this.playPauseBTN.appendChild(playEl);
+                this.stopTimer();
+            } else if(this.pause === false) {
+                while(this.playPauseBTN.children[0]) {
+                    this.playPauseBTN.removeChild(this.playPauseBTN.children[0]);
+                }
+                this.playPauseBTN.appendChild(pauseEl);
+                this.startTimer();
+            }
+        }
+    },
+
     delegateEvents: function () {
         var self = this;
         for( var i = 0; i < this.size * this.size; i++ ) {
@@ -250,6 +273,10 @@ var Game = {
                 self.openCell(x, y);
             });
         }
+
+        this.playPauseBTN.addEventListener('click', function () {
+            self.playPause();
+        });
     },
 
     closeAll: function() {
@@ -275,22 +302,24 @@ var Game = {
             this.startTimer();
         }
 
-        if( !this.checkCountEmptyCellId ) {
-            var flexElement = document.querySelector('.flex-element[data-row="' + x + '"][data-col="' + y + '"]');
-            var wrapperClasses = flexElement.childNodes[0].className.split(' ');
-            var count = 0;
+        if(!this.pause) {
+            if( !this.checkCountEmptyCellId ) {
+                var flexElement = document.querySelector('.flex-element[data-row="' + x + '"][data-col="' + y + '"]');
+                var wrapperClasses = flexElement.childNodes[0].className.split(' ');
+                var count = 0;
 
-            for( var i = 0; i < wrapperClasses.length; i++ ) {
-                if( wrapperClasses[i] === 'open' ) {
-                    count++;
+                for( var i = 0; i < wrapperClasses.length; i++ ) {
+                    if( wrapperClasses[i] === 'open' ) {
+                        count++;
+                    }
                 }
-            }
 
-            if( count === 0 ) {
-                wrapperClasses.push('open');
-                document.querySelector('.flex-element[data-row="' + x + '"][data-col="' + y + '"]').childNodes[0].className = wrapperClasses.join(' ');
-                this.area[x][y].isOpen = true;
-                this.checkCountEmptyCell();
+                if( count === 0 ) {
+                    wrapperClasses.push('open');
+                    document.querySelector('.flex-element[data-row="' + x + '"][data-col="' + y + '"]').childNodes[0].className = wrapperClasses.join(' ');
+                    this.area[x][y].isOpen = true;
+                    this.checkCountEmptyCell();
+                }
             }
         }
     },
@@ -354,8 +383,72 @@ var Game = {
         }
 
         if(counterCheckedCell === this.size * this.size) {
-            alert('You win');
             this.stopTimer();
+            var score = this.countUpScore();
+            alert('You win! Score ' + score);
+            this.saveResult(score);
+        }
+    },
+
+    countUpScore: function() {
+        var ratio;
+        switch (this.size) {
+            case this.MEDIUM:
+                ratio = 2;
+                break;
+            case this.LARGE:
+                ratio = 4;
+                break;
+            case this.EXTRA_LARGE:
+                ratio = 6;
+                break;
+            default:
+                ratio = 1;
+                break;
+        }
+        return Math.round((this.size * this.size) * 10000 * ratio / ((this.minutes * 60 + this.seconds) * this.stepCounter));
+    },
+
+    saveResult: function(score) {
+        var self = this;
+        var name = prompt('Введите имя', '');
+        var user = {
+            name: name,
+            score: score,
+            time: self.minutes + ':' + self.seconds
+        };
+
+        switch (this.size) {
+            case this.SMALL:
+                if(localStorage.scoreSmallArea) {
+                    localStorage.scoreSmallArea = localStorage.scoreSmallArea + JSON.stringify(user) + ';';
+                } else {
+                    localStorage.scoreSmallArea = JSON.stringify(user) + ';';
+                }
+                break;
+            case this.MEDIUM:
+                if(localStorage.scoreMediumArea) {
+                    localStorage.scoreMediumArea = localStorage.scoreMediumArea + JSON.stringify(user) + ';';
+                } else {
+                    localStorage.scoreMediumArea = JSON.stringify(user) + ';';
+                }
+                break;
+            case this.LARGE:
+                if(localStorage.scoreLargeArea) {
+                    localStorage.scoreLargeArea = localStorage.scoreLargeArea + JSON.stringify(user) + ';';
+                } else {
+                    localStorage.scoreLargeArea = JSON.stringify(user) + ';';
+                }
+                break;
+            case this.EXTRA_LARGE:
+                if(localStorage.scoreExtraLargeArea) {
+                    localStorage.scoreExtraLargeArea = localStorage.scoreExtraLargeArea + JSON.stringify(user) + ';';
+                } else {
+                    localStorage.scoreExtraLargeArea = JSON.stringify(user) + ';';
+                }
+                break;
+            default:
+                break;
         }
     },
 
@@ -364,8 +457,8 @@ var Game = {
     },
 
     start: function () {
-        localStorage.icons = this.icons;
         var self = this;
+        this.playPauseBTN.innerHTML = '<i class="fa fa-pause fa-2x" aria-hidden="true"></i>';
         this.generateArea();
         this.setIcons();
         setTimeout(function () {

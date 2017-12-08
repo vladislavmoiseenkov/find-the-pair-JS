@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Score</title>
+    <link rel="stylesheet" href="icon/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="title">
+            <h1>Find the pair</h1>
+        </div>
+        <div class="home">
+            <a href="index.html">
+                <i class="fa fa-home fa-2x" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+    <div class="score-container">
+        <div class="table-score-head">
+            <ul id="area-size">
+                <li onclick="renderScoreTable(36)">6 * 6</li>
+                <li onclick="renderScoreTable(64)">8 * 8</li>
+                <li onclick="renderScoreTable(100)">10 * 10</li>
+                <li onclick="renderScoreTable(144)">12 * 12</li>
+            </ul>
+            <div class="column-title">
+                <div class="name-title">Имя</div>
+                <div class="score-title">Очков</div>
+                <div class="time-title">Время</div>
+            </div>
+        </div>
+        <div class="table-score-body" id="table-body">
+            <div id="size36"></div>
+            <div id="size64"></div>
+            <div id="size100"></div>
+            <div id="size144"></div>
+        </div>
+    </div>
+    <script src="js/score.js"></script>
+    <script>
+        renderScoreTable();
+    </script>
+</body>
+</html>

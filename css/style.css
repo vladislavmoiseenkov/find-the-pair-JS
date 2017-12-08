@@ -4,7 +4,7 @@ body {
     padding: 0;
 }
 
-.container {
+#container, .score-container, #start-screen {
     margin: auto;
     max-width: 1200px;
 }
@@ -24,6 +24,12 @@ body {
     display: flex;
     justify-content: center;
     width: 100%;
+}
+
+.header .title h1 {
+    color: #c1c1c1;
+    letter-spacing: 5px;
+    text-transform: uppercase;
 }
 
 .header div h2 {
@@ -73,4 +79,59 @@ i {
 .checked {
     opacity: 0;
     transition: opacity 500ms ease;
+}
+
+ul#area-size {
+    display: table;
+    margin: auto;
+}
+
+ul#area-size li {
+    display: inline-block;
+    font-size: 20px;
+    padding:20px;
+    cursor: pointer;
+}
+
+.table-row {
+    display: flex;
+}
+
+.table-row:nth-child(2n) {
+    background-color: #ffffff;
+}
+
+.table-row div {
+    font-size: 20px;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.column-title {
+    background-color: #fff;
+    display: flex;
+}
+
+.column-title div {
+    font-size: 20px;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+#start-screen ul {
+    list-style: none;
+}
+
+#start-screen ul li {
+    font-size: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+#start-screen ul li a {
+    color: #000;
+    text-decoration: none;
+    text-transform: uppercase;
 }
