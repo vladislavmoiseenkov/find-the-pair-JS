@@ -387,6 +387,7 @@ var Game = {
             var score = this.countUpScore();
             alert('You win! Score ' + score);
             this.saveResult(score);
+            location.replace('scores.html');
         }
     },
 
@@ -463,7 +464,7 @@ var Game = {
         this.setIcons();
         setTimeout(function () {
             self.closeAll();
-        }, 3000);
+        }, (this.size / 2) * 1000);
         this.delegateEvents();
     }
 };
